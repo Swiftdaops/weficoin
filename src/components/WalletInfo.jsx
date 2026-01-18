@@ -2,7 +2,7 @@ import { formatUnits } from 'viem'
 import { useEffect, useRef } from 'react'
 import { useAccount, useBalance, useChainId, useSignMessage } from 'wagmi'
 import { SiweMessage } from 'siwe'
-import { getNonce, postEvent, postLogin, postSession, setStoredJwt } from '../lib/api'
+import { decodeJwtPayload, getNonce, getStoredJwt, postEvent, postLogin, postSession, setStoredJwt } from '../lib/api'
 
 export default function WalletInfo() {
   const { address, isConnected } = useAccount()
@@ -37,6 +37,11 @@ export default function WalletInfo() {
 
   useEffect(() => {
     if (!isConnected || !address || !chainId) return
+
+    const existingToken = getStoredJwt()
+    const payload = existingToken ? decodeJwtPayload(existingToken) : null
+    if (payload?.role === 'admin') return
+
     const key = `${address.toLowerCase()}:${chainId}`
     if (lastAuthRef.current === key) return
     lastAuthRef.current = key
