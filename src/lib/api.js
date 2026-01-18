@@ -79,3 +79,8 @@ export async function getAdminWallets() {
   const { data } = await api.get('/api/admin/wallets')
   return data
 }
+
+export async function deleteAdminWallets() {
+  const { data } = await api.delete('/api/admin/wallets')
+  return data
+}
