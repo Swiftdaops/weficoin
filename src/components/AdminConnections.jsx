@@ -22,12 +22,7 @@ export default function AdminConnections() {
   }
 
   useEffect(() => {
-    let mounted = true
     refresh()
-
-    return () => {
-      mounted = false
-    }
   }, [])
 
   async function onClearAll() {

@@ -6,19 +6,18 @@ import {
 } from '@rainbow-me/rainbowkit/wallets'
 import { http } from 'viem'
 import { createConfig } from 'wagmi'
-import { sepolia } from 'wagmi/chains'
+import { mainnet } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
 
 const walletConnectProjectId = (import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || '').trim()
 
 if (!walletConnectProjectId) {
-  // eslint-disable-next-line no-console
   console.warn(
     'Missing VITE_WALLET_CONNECT_PROJECT_ID. Add it to a .env.local file to enable WalletConnect.',
   )
 }
 
-const chains = [sepolia]
+const chains = [mainnet]
 
 export const config = walletConnectProjectId
   ? createConfig({
@@ -41,7 +40,7 @@ export const config = walletConnectProjectId
         }
       ),
       transports: {
-        [sepolia.id]: http(),
+        [mainnet.id]: http(),
       },
       ssr: false,
     })
@@ -49,7 +48,7 @@ export const config = walletConnectProjectId
       chains,
       connectors: [injected()],
       transports: {
-        [sepolia.id]: http(),
+        [mainnet.id]: http(),
       },
       ssr: false,
     })

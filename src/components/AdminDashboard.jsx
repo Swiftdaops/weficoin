@@ -26,7 +26,7 @@ export default function AdminDashboard() {
         return
       }
       setAdminError('Login failed')
-    } catch (err) {
+    } catch {
       setAdminError('Invalid credentials or server error')
     }
   }
