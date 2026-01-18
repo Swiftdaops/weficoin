@@ -17,9 +17,13 @@ export default function NavBar() {
   }, [])
 
   return (
-    <nav className="nav-bar" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-      <Link to="/">Home</Link>
-      <Link to="/admin">Admin</Link>
+    <nav className="mb-4 flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <Link className="text-sm font-medium text-slate-700 hover:text-slate-900" to="/">
+        Home
+      </Link>
+      <Link className="text-sm font-medium text-slate-700 hover:text-slate-900" to="/admin">
+        Admin
+      </Link>
       {isAdmin ? (
         <button
           type="button"
@@ -28,6 +32,7 @@ export default function NavBar() {
             // force a reload to update UI/state
             window.location.href = '/'
           }}
+          className="ml-auto rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50"
         >
           Logout
         </button>

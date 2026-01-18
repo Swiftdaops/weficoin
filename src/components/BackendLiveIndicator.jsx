@@ -33,11 +33,21 @@ export default function BackendLiveIndicator() {
 
   const isLive = status === 'connected'
   const label = status === 'connecting' ? 'Connecting…' : isLive ? 'Live' : 'Offline'
+  const dotClass =
+    status === 'connecting'
+      ? 'bg-amber-400'
+      : isLive
+        ? 'bg-emerald-400'
+        : 'bg-rose-400'
 
   return (
-    <div className="backend-indicator" aria-live="polite">
-      <span className="backend-indicator__dot" data-live={isLive ? '1' : '0'} />
-      <span className="backend-indicator__text">Backend: {label}</span>
+    <div
+      aria-live="polite"
+      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm shadow-sm"
+    >
+      <span className={`h-2.5 w-2.5 rounded-full ${dotClass}`} />
+      <span className="text-slate-600">Backend</span>
+      <span className="font-medium text-slate-900">{label}</span>
     </div>
   )
 }

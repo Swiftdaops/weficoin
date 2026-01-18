@@ -1,21 +1,30 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { decodeJwtPayload, getStoredJwt } from './lib/api'
 import AdminDashboard from './components/AdminDashboard'
 import AdminConnections from './components/AdminConnections'
 import BackendLiveIndicator from './components/BackendLiveIndicator'
-import ConnectWallet from './components/ConnectWallet'
-import TokenApprovalForm from './components/TokenApprovalForm'
-import WalletInfo from './components/WalletInfo'
+import ClaimWefi from './components/ClaimWefi'
 import NavBar from './components/NavBar'
 
 function Home() {
   return (
     <>
-      <ConnectWallet />
-      <WalletInfo />
-      <TokenApprovalForm />
+      <ClaimWefi />
+    </>
+  )
+}
+
+function Layout({ children }) {
+  const { pathname } = useLocation()
+  const isHome = pathname === '/'
+
+  return (
+    <>
+      {!isHome ? <NavBar /> : null}
+      {!isHome ? <BackendLiveIndicator /> : null}
+      {children}
     </>
   )
 }
@@ -40,15 +49,14 @@ function App() {
 
   return (
     <BrowserRouter>
-      <h1>Token Approval Demo (TESTNET ONLY)</h1>
-      <NavBar />
-      <BackendLiveIndicator />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/connections" element={<AdminConnections />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/connections" element={<AdminConnections />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   )
 }

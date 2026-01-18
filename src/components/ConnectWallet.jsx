@@ -15,9 +15,6 @@ export default function ConnectWallet() {
             Show QR Code
           </button>
         ) : null}
-        {!isConnected && walletConnectProjectId ? (
-          <div className="connect-help">Scan the QR with your phone wallet (WalletConnect).</div>
-        ) : null}
       </div>
     </div>
   )
