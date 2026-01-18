@@ -24,6 +24,7 @@ export default function ConnectWallet() {
       if (res?.token) {
         setStoredJwt(res.token)
         setAdminStatus('Admin logged in')
+        window.location.hash = 'admin'
         return
       }
       setAdminError('Login failed')
