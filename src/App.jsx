@@ -1,27 +1,35 @@
 import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { decodeJwtPayload, getStoredJwt } from './lib/api'
 import AdminDashboard from './components/AdminDashboard'
+import AdminConnections from './components/AdminConnections'
 import BackendLiveIndicator from './components/BackendLiveIndicator'
 import ConnectWallet from './components/ConnectWallet'
 import TokenApprovalForm from './components/TokenApprovalForm'
 import WalletInfo from './components/WalletInfo'
+import NavBar from './components/NavBar'
+
+function Home() {
+  return (
+    <>
+      <ConnectWallet />
+      <WalletInfo />
+      <TokenApprovalForm />
+    </>
+  )
+}
 
 function App() {
-  const [hash, setHash] = useState(() => window.location.hash)
+  // keep a token-version listener so dashboard updates when login state changes
   const [tokenVersion, setTokenVersion] = useState(0)
 
   useEffect(() => {
-    const onHash = () => setHash(window.location.hash)
     const onStorage = (e) => {
       if (e.key === 'backendJwt') setTokenVersion((v) => v + 1)
     }
-    window.addEventListener('hashchange', onHash)
     window.addEventListener('storage', onStorage)
-    return () => {
-      window.removeEventListener('hashchange', onHash)
-      window.removeEventListener('storage', onStorage)
-    }
+    return () => window.removeEventListener('storage', onStorage)
   }, [])
 
   const isAdmin = useMemo(() => {
@@ -30,29 +38,18 @@ function App() {
     return payload?.role === 'admin'
   }, [tokenVersion])
 
-  const route = hash.replace(/^#/, '')
-
   return (
-    <>
+    <BrowserRouter>
       <h1>Token Approval Demo (TESTNET ONLY)</h1>
+      <NavBar />
       <BackendLiveIndicator />
-      <ConnectWallet />
-      {route === 'admin' ? (
-        isAdmin ? (
-          <AdminDashboard />
-        ) : (
-          <div style={{ marginTop: 16 }}>
-            <h2>Admin Dashboard</h2>
-            <div>Please sign in with admin email/password.</div>
-          </div>
-        )
-      ) : (
-        <>
-          <WalletInfo />
-          <TokenApprovalForm />
-        </>
-      )}
-    </>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/connections" element={<AdminConnections />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

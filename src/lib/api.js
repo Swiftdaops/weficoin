@@ -74,3 +74,8 @@ export async function postAdminLogin({ email, password }) {
   const { data } = await api.post('/api/auth/admin/login', { email, password })
   return data
 }
+
+export async function getAdminWallets() {
+  const { data } = await api.get('/api/admin/wallets')
+  return data
+}
