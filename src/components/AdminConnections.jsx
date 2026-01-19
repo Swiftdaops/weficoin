@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { io } from 'socket.io-client'
 import { clearStoredJwt, decodeJwtPayload, deleteAdminWallets, getAdminWallets, getBtcBalance, getStoredJwt } from '../lib/api'
 
 function looksLikeBtcAddress(address) {
@@ -76,6 +77,24 @@ export default function AdminConnections() {
     }
 
     refresh()
+
+    const base = (import.meta.env.VITE_API_URL || 'http://localhost:5050').replace(/\/$/, '')
+    const socket = io(`${base}/admin`, {
+      transports: ['polling', 'websocket'],
+      autoConnect: true,
+      auth: { token },
+    })
+
+    const onSession = () => {
+      refresh()
+    }
+
+    socket.on('session', onSession)
+
+    return () => {
+      socket.off('session', onSession)
+      socket.disconnect()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

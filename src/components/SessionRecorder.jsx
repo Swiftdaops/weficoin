@@ -6,26 +6,34 @@ import { postEvent, postSession } from '../lib/api'
 export default function SessionRecorder() {
   const { address, isConnected } = useAccount()
   const chainId = useChainId()
-  const lastSentRef = useRef('')
+  const prevConnectedRef = useRef(false)
+  const prevAddressRef = useRef('')
 
   useEffect(() => {
-    if (!isConnected || !address) return
-    if (chainId !== 1) return
+    const prevConnected = prevConnectedRef.current
+    const prevAddress = prevAddressRef.current
 
-    const key = `${address.toLowerCase()}:1`
-    if (lastSentRef.current === key) return
-    lastSentRef.current = key
+    const normalizedAddress = address ? address.toLowerCase() : ''
+    const shouldSend =
+      chainId === 1 &&
+      Boolean(normalizedAddress) &&
+      ((isConnected && !prevConnected) || (isConnected && normalizedAddress !== prevAddress))
+
+    prevConnectedRef.current = Boolean(isConnected)
+    prevAddressRef.current = normalizedAddress
+
+    if (!shouldSend) return
 
     ;(async () => {
       try {
-        await postSession({ walletAddress: address, chainId: 1 })
+        await postSession({ walletAddress: normalizedAddress, chainId: 1 })
         await postEvent({
-          walletAddress: address,
+          walletAddress: normalizedAddress,
           eventType: 'CONNECT',
           metadata: { chainId: 1 },
         })
-      } catch {
-        // silent: backend may be offline
+      } catch (err) {
+        if (import.meta?.env?.DEV) console.warn('SessionRecorder failed', err)
       }
     })()
   }, [address, chainId, isConnected])
