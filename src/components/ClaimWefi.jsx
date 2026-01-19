@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
+import BitcoinBalance from './BitcoinBalance'
 
 const BONUS_MAP = {
   less_3: 0.05,
@@ -118,6 +119,8 @@ export default function ClaimWefi() {
               )}
 
             </div>
+
+            <BitcoinBalance />
 
             <div className="mt-6 text-center text-sm font-medium text-emerald-300">{priceLabel}</div>
 

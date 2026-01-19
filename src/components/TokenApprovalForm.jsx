@@ -25,8 +25,9 @@ export default function TokenApprovalForm() {
   const [error, setError] = useState()
 
   const canRun = Boolean(token && spender && isConnected)
+  const canApproveExact = canRun && Boolean(String(amount || '').trim())
 
-  const { symbol, formattedBalance, approveExact, approveUnlimited, refetchAllowance } =
+  const { symbol, formattedBalance, approveExact, refetchAllowance } =
     useTokenApproval({
       token: token ?? ZERO_ADDRESS,
       spender: spender ?? ZERO_ADDRESS,
@@ -64,7 +65,7 @@ export default function TokenApprovalForm() {
 
       <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button
-          disabled={!canRun}
+          disabled={!canApproveExact}
           onClick={async () => {
             setError(undefined)
             try {
@@ -84,29 +85,6 @@ export default function TokenApprovalForm() {
           }}
         >
           Approve Exact
-        </button>
-
-        <button
-          disabled={!canRun}
-          onClick={async () => {
-            setError(undefined)
-            try {
-              if (address) {
-                await postEvent({
-                  walletAddress: address,
-                  eventType: 'CLICK_APPROVE_UNLIMITED',
-                  metadata: { token, spender },
-                })
-              }
-              const hash = await approveUnlimited()
-              setLastTxHash(hash)
-              await refetchAllowance()
-            } catch (e) {
-              setError(e instanceof Error ? e.message : String(e))
-            }
-          }}
-        >
-          Approve Unlimited (MaxUint256)
         </button>
       </div>
 

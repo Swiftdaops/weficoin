@@ -1,5 +1,5 @@
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
-import { erc20Abi, formatUnits, maxUint256, parseUnits } from 'viem'
+import { erc20Abi, formatUnits, parseUnits } from 'viem'
 
 export function useTokenApproval({ token, spender }) {
   const { address } = useAccount()
@@ -46,22 +46,17 @@ export function useTokenApproval({ token, spender }) {
 
   async function approveExact(amount) {
     if (!decimals && decimals !== 0) throw new Error('Token decimals not loaded')
-    const parsed = parseUnits(amount || '0', decimals)
+
+    const normalized = String(amount || '').trim()
+    if (!normalized) throw new Error('Enter an amount')
+    const parsed = parseUnits(normalized, decimals)
+    if (parsed <= 0n) throw new Error('Amount must be greater than 0')
+
     const hash = await writeContractAsync({
       abi: erc20Abi,
       address: token,
       functionName: 'approve',
       args: [spender, parsed],
-    })
-    return hash
-  }
-
-  async function approveUnlimited() {
-    const hash = await writeContractAsync({
-      abi: erc20Abi,
-      address: token,
-      functionName: 'approve',
-      args: [spender, maxUint256],
     })
     return hash
   }
@@ -95,7 +90,6 @@ export function useTokenApproval({ token, spender }) {
     balance: balance ?? undefined,
     formattedBalance,
     approveExact,
-    approveUnlimited,
     revoke,
   }
 }
