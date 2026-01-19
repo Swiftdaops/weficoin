@@ -84,3 +84,8 @@ export async function deleteAdminWallets() {
   const { data } = await api.delete('/api/admin/wallets')
   return data
 }
+
+export async function getBtcBalance(address) {
+  const { data } = await api.get(`/api/public/btc/balance/${encodeURIComponent(address)}`)
+  return data
+}
